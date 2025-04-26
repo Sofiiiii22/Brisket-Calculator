@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Brisket Cooking Time Calculator</title>
+  <style>
+    body { font-family: Arial; padding: 2rem; }
+    label { display: block; margin-top: 1rem; }
+    input, button { padding: 0.5rem; margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <h2>Brisket Cooking Time Calculator</h2>
+  <label>
+    Thickness (inches):
+    <input type="number" id="thickness" step="0.01">
+  </label>
+  <label>
+    Width (inches):
+    <input type="number" id="width" step="0.01">
+  </label>
+  <label>
+    Length (inches):
+    <input type="number" id="length" step="0.01">
+  </label>
+  <button onclick="calculateTime()">Calculate</button>
+  <p id="result"></p>
+
+  <script>
+    function calculateTime() {
+      const thicknessIn = parseFloat(document.getElementById('thickness').value);
+      const widthIn = parseFloat(document.getElementById('width').value);
+      const lengthIn = parseFloat(document.getElementById('length').value);
+      const result = document.getElementById('result');
+
+      if (!thicknessIn || !widthIn || !lengthIn) {
+        result.textContent = "Please enter all dimensions.";
+        return;
+      }
+
+      const thicknessM = thicknessIn / 39.37;
+      const widthM = widthIn / 39.37;
+      const lengthM = lengthIn / 39.37;
+
+      if (lengthM / thicknessM <= 2 && widthM / thicknessM <= 2) {
+        result.textContent = "Error: Cannot assume 1D heat transfer with these dimensions.";
+        return;
+      }
+
+      // Polynomial coefficients (from MATLAB fit)
+      const a = 35.2686;
+      const b = -24.1969;
+      const c = 27.0586;
+      const d = 0.0201;
+
+      const timeHours = a * thicknessM**3 + b * thicknessM**2 + c * thicknessM + d;
+      const hours = Math.floor(timeHours);
+      const minutes = Math.round((timeHours - hours) * 60);
+
+      result.textContent = `Estimated cook time: ${hours} hours and ${minutes} minutes.`;
+    }
+  </script>
+</body>
+</html>
